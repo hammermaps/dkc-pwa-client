@@ -19,18 +19,21 @@ export function useNetwork() {
     }
 
     isCheckingConnectivity.value = true;
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 5000);
     try {
       const apiBase = (import.meta.env.VITE_API_BASE_URL as string) ?? '';
       const res = await fetch(`${apiBase}/api.php?action=auth_status`, {
         method: 'GET',
         credentials: 'include',
         cache: 'no-cache',
-        signal: AbortSignal.timeout(5000),
+        signal: controller.signal,
       });
       isOnline.value = res.ok || res.status === 401;
     } catch {
       isOnline.value = false;
     } finally {
+      clearTimeout(timeoutId);
       isCheckingConnectivity.value = false;
     }
 

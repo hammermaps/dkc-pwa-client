@@ -53,6 +53,28 @@
 <script setup lang="ts">
 import { ref, onUnmounted } from 'vue';
 
+// BarcodeDetector is available in modern browsers (Chrome 83+, Edge 83+, Android WebView)
+// https://developer.mozilla.org/en-US/docs/Web/API/BarcodeDetector
+interface BarcodeDetectorResult {
+  rawValue: string;
+}
+
+interface BarcodeDetectorOptions {
+  formats: string[];
+}
+
+interface BarcodeDetectorAPI {
+  detect(source: ImageData | HTMLVideoElement | HTMLCanvasElement): Promise<BarcodeDetectorResult[]>;
+}
+
+interface BarcodeDetectorConstructor {
+  new(options?: BarcodeDetectorOptions): BarcodeDetectorAPI;
+}
+
+interface WindowWithBarcodeDetector extends Window {
+  BarcodeDetector?: BarcodeDetectorConstructor;
+}
+
 const emit = defineEmits<{
   (e: 'scanned', code: string): void;
 }>();
@@ -120,9 +142,9 @@ function processFrame() {
   ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
   const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
 
-  // Use BarcodeDetector API if available
-  if ('BarcodeDetector' in window) {
-    const detector = new (window as unknown as { BarcodeDetector: { new(opts: object): { detect(img: ImageData): Promise<{ rawValue: string }[]> } } }).BarcodeDetector({ formats: ['qr_code'] });
+  const BarcodeDetector = (window as WindowWithBarcodeDetector).BarcodeDetector;
+  if (BarcodeDetector) {
+    const detector = new BarcodeDetector({ formats: ['qr_code'] });
     detector.detect(imageData).then((codes) => {
       if (codes.length > 0 && codes[0]) {
         const code = codes[0].rawValue;
@@ -133,7 +155,6 @@ function processFrame() {
       }
     }).catch(() => scheduleFrame());
   } else {
-    // Fallback: just stop and show message
     error.value = 'QR-Code-Erkennung wird von diesem Browser nicht unterstützt.';
     stopScanning();
   }

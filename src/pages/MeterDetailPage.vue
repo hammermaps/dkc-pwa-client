@@ -233,7 +233,7 @@ const showReadingForm = ref(false);
 const isSaving = ref(false);
 const readingForm = ref({
   value: null as number | null,
-  date: new Date().toISOString().split('T')[0] as string,
+  date: new Date().toISOString().split('T')[0],
   notes: '',
   imageBlob: null as Blob | null,
 });
@@ -267,7 +267,7 @@ async function saveReading() {
       showReadingForm.value = false;
       readingForm.value = {
         value: null,
-        date: new Date().toISOString().split('T')[0] as string,
+        date: new Date().toISOString().split('T')[0],
         notes: '',
         imageBlob: null,
       };
