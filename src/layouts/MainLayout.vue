@@ -134,7 +134,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed } from 'vue';
+import { ref, computed, watch } from 'vue';
 import { useRouter, useRoute } from 'vue-router';
 import { useAuthStore } from '../stores/auth';
 import OfflineBanner from '../components/OfflineBanner.vue';
@@ -148,12 +148,19 @@ const leftDrawerOpen = ref(false);
 const showUserMenu = ref(false);
 const user = computed(() => authStore.user);
 
-const activeTab = computed(() => {
-  const name = String(route.name ?? '');
-  if (name.startsWith('meter')) return 'meters';
-  if (name === 'settings') return 'settings';
-  return 'dashboard';
-});
+// Writable ref for q-tabs v-model – kept in sync with the current route
+const activeTab = ref<string>('dashboard');
+
+watch(
+  () => route.name,
+  (name) => {
+    const n = String(name ?? '');
+    if (n.startsWith('meter')) activeTab.value = 'meters';
+    else if (n === 'settings') activeTab.value = 'settings';
+    else activeTab.value = 'dashboard';
+  },
+  { immediate: true },
+);
 
 const navItems = [
   { name: 'dashboard', icon: 'dashboard', label: 'Dashboard', to: '/dashboard' },

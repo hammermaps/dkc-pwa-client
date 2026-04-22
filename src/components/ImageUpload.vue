@@ -49,7 +49,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue';
+import { ref, onUnmounted } from 'vue';
 
 const props = withDefaults(
   defineProps<{
@@ -76,6 +76,13 @@ function openFilePicker() {
   fileInput.value?.click();
 }
 
+function revokePreview() {
+  if (previewUrl.value) {
+    URL.revokeObjectURL(previewUrl.value);
+    previewUrl.value = null;
+  }
+}
+
 function onFileChange(event: Event) {
   const input = event.target as HTMLInputElement;
   const file = input.files?.[0];
@@ -88,20 +95,23 @@ function onFileChange(event: Event) {
     return;
   }
 
+  // Revoke previous object URL before creating a new one to prevent memory leaks
+  revokePreview();
   previewUrl.value = URL.createObjectURL(file);
   emit('update:blob', file);
 }
 
 function removeImage() {
-  if (previewUrl.value) {
-    URL.revokeObjectURL(previewUrl.value);
-  }
-  previewUrl.value = null;
+  revokePreview();
   if (fileInput.value) {
     fileInput.value.value = '';
   }
   emit('update:blob', null);
 }
+
+onUnmounted(() => {
+  revokePreview();
+});
 </script>
 
 <style scoped>

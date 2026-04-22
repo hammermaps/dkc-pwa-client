@@ -282,11 +282,12 @@ async function saveReading() {
 
 async function toggleActive() {
   if (!meter.value) return;
-  const ok = await meterStore.toggleMeterActive(meter.value.id, !meter.value.active);
+  const wasActive = meter.value.active;
+  const ok = await meterStore.toggleMeterActive(meter.value.id, !wasActive);
   if (ok) {
     $q.notify({
       type: 'positive',
-      message: meter.value.active ? 'Zähler deaktiviert' : 'Zähler aktiviert',
+      message: wasActive ? 'Zähler deaktiviert' : 'Zähler aktiviert',
     });
   }
 }

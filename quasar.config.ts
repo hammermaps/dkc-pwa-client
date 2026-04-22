@@ -11,7 +11,7 @@ export default configure((/* ctx */) => {
       errors: true,
     },
 
-    boot: ['pinia', 'axios'],
+    boot: ['pinia', 'network'],
 
     css: ['app.scss'],
 
@@ -79,53 +79,11 @@ export default configure((/* ctx */) => {
     },
 
     pwa: {
-      workboxMode: 'GenerateSW',
+      workboxMode: 'InjectManifest',
       injectPwaMetaTags: true,
       swFilename: 'sw.js',
       manifestFilename: 'manifest.json',
       useCredentialsForManifestTag: false,
-
-      workboxOptions: {
-        skipWaiting: true,
-        clientsClaim: true,
-        cleanupOutdatedCaches: true,
-        runtimeCaching: [
-          {
-            urlPattern: /\/api\.php\?action=dashboard_data/,
-            handler: 'StaleWhileRevalidate',
-            options: {
-              cacheName: 'api-dashboard',
-              expiration: {
-                maxEntries: 5,
-                maxAgeSeconds: 300,
-              },
-            },
-          },
-          {
-            urlPattern: /\/api\.php\?action=(nea_|mm_|building_|keys_|projects_)/,
-            handler: 'NetworkFirst',
-            options: {
-              cacheName: 'api-data',
-              networkTimeoutSeconds: 10,
-              expiration: {
-                maxEntries: 50,
-                maxAgeSeconds: 3600,
-              },
-            },
-          },
-          {
-            urlPattern: /^https:\/\/fonts\.(googleapis|gstatic)\.com/,
-            handler: 'CacheFirst',
-            options: {
-              cacheName: 'google-fonts',
-              expiration: {
-                maxEntries: 30,
-                maxAgeSeconds: 60 * 60 * 24 * 365,
-              },
-            },
-          },
-        ],
-      },
 
       manifest: {
         name: 'DK-Control',

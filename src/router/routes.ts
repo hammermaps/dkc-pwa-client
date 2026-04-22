@@ -32,13 +32,13 @@ const routes: RouteRecordRaw[] = [
         component: () => import('pages/MeterCreatePage.vue'),
       },
       {
-        path: 'meters/:id',
+        path: 'meters/:id(\\d+)',
         name: 'meter-detail',
         component: () => import('pages/MeterDetailPage.vue'),
         props: (route) => ({ id: Number(route.params['id']) }),
       },
       {
-        path: 'meters/:id/edit',
+        path: 'meters/:id(\\d+)/edit',
         name: 'meter-edit',
         component: () => import('pages/MeterEditPage.vue'),
         props: (route) => ({ id: Number(route.params['id']) }),

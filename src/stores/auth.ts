@@ -12,7 +12,7 @@ export const useAuthStore = defineStore('auth', () => {
   const isLoading = ref(false);
   const loginError = ref<string | null>(null);
 
-  const isAuthenticated = computed(() => !!token.value && !!user.value);
+  const isAuthenticated = computed(() => !!user.value);
   const isAdmin = computed(() => user.value?.is_admin ?? false);
 
   function hasPermission(perm: string): boolean {

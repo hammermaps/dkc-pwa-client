@@ -90,6 +90,19 @@ export async function submitReading(data: MeterSubmitRequest): Promise<{ success
   return apiPost('meter_submit', data);
 }
 
+export async function submitReadingWithImage(
+  data: MeterSubmitRequest,
+  imageBlob: Blob,
+): Promise<{ success: boolean; error?: string }> {
+  const formData = new FormData();
+  formData.append('meter_id', String(data.meter_id));
+  formData.append('value', String(data.value));
+  formData.append('date', data.date);
+  if (data.notes) formData.append('notes', data.notes);
+  formData.append('image', imageBlob, 'reading.jpg');
+  return apiPostFormData('meter_submit', formData);
+}
+
 export async function batchSyncReadings(
   readings: MeterSubmitRequest[],
 ): Promise<{ success: boolean; synced?: number; errors?: unknown[]; error?: string }> {

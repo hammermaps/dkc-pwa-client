@@ -69,6 +69,16 @@ export const useMeterStore = defineStore('meters', () => {
             cached_at: now,
           }));
           await db.meterReadings.bulkPut(cached);
+        } else {
+          error.value = res.error ?? 'Fehler beim Laden der Ablesungen';
+          // Fall back to cached readings on API error
+          const cached = await db.meterReadings
+            .where('meter_id')
+            .equals(meterId)
+            .reverse()
+            .limit(limit)
+            .toArray();
+          currentReadings.value = cached.map(({ synced: _s, cached_at: _ca, ...r }) => r as MeterReading);
         }
       } else {
         const cached = await db.meterReadings

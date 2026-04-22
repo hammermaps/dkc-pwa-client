@@ -2,7 +2,7 @@
   "extends": "./tsconfig.json",
   "compilerOptions": {
     "composite": true,
-    "noEmit": false,
+    "noEmit": true,
     "skipLibCheck": true,
     "plugins": [
       {
